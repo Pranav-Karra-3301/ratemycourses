@@ -1,0 +1,240 @@
+[
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "reputationTokenAddress",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "nonpayable",
+    "type": "constructor"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "uint256",
+        "name": "reviewId",
+        "type": "uint256"
+      },
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "author",
+        "type": "address"
+      },
+      {
+        "indexed": true,
+        "internalType": "string",
+        "name": "courseId",
+        "type": "string"
+      },
+      {
+        "indexed": false,
+        "internalType": "string",
+        "name": "semester",
+        "type": "string"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint8",
+        "name": "overallRating",
+        "type": "uint8"
+      },
+      {
+        "indexed": false,
+        "internalType": "string",
+        "name": "contentHash",
+        "type": "string"
+      }
+    ],
+    "name": "ReviewSubmitted",
+    "type": "event"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "string",
+        "name": "courseId",
+        "type": "string"
+      }
+    ],
+    "name": "getCourseReviewIds",
+    "outputs": [
+      {
+        "internalType": "uint256[]",
+        "name": "",
+        "type": "uint256[]"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "reviewId",
+        "type": "uint256"
+      }
+    ],
+    "name": "getReview",
+    "outputs": [
+      {
+        "components": [
+          {
+            "internalType": "uint256",
+            "name": "id",
+            "type": "uint256"
+          },
+          {
+            "internalType": "address",
+            "name": "author",
+            "type": "address"
+          },
+          {
+            "internalType": "string",
+            "name": "courseId",
+            "type": "string"
+          },
+          {
+            "internalType": "string",
+            "name": "semester",
+            "type": "string"
+          },
+          {
+            "internalType": "string",
+            "name": "professor",
+            "type": "string"
+          },
+          {
+            "internalType": "uint8",
+            "name": "overallRating",
+            "type": "uint8"
+          },
+          {
+            "internalType": "uint8",
+            "name": "difficultyRating",
+            "type": "uint8"
+          },
+          {
+            "internalType": "uint8",
+            "name": "workloadHours",
+            "type": "uint8"
+          },
+          {
+            "internalType": "string",
+            "name": "contentHash",
+            "type": "string"
+          },
+          {
+            "internalType": "uint256",
+            "name": "createdAt",
+            "type": "uint256"
+          }
+        ],
+        "internalType": "struct ReviewRegistry.Review",
+        "name": "",
+        "type": "tuple"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "author",
+        "type": "address"
+      }
+    ],
+    "name": "getReviewsByAuthor",
+    "outputs": [
+      {
+        "internalType": "uint256[]",
+        "name": "",
+        "type": "uint256[]"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "reputationToken",
+    "outputs": [
+      {
+        "internalType": "contract ReputationToken",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "reviewCount",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "string",
+        "name": "courseId",
+        "type": "string"
+      },
+      {
+        "internalType": "string",
+        "name": "semester",
+        "type": "string"
+      },
+      {
+        "internalType": "string",
+        "name": "professor",
+        "type": "string"
+      },
+      {
+        "internalType": "uint8",
+        "name": "overallRating",
+        "type": "uint8"
+      },
+      {
+        "internalType": "uint8",
+        "name": "difficultyRating",
+        "type": "uint8"
+      },
+      {
+        "internalType": "uint8",
+        "name": "workloadHours",
+        "type": "uint8"
+      },
+      {
+        "internalType": "string",
+        "name": "contentHash",
+        "type": "string"
+      }
+    ],
+    "name": "submitReview",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "reviewId",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  }
+]

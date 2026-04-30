@@ -1,0 +1,24 @@
+{
+  "name": "contracts",
+  "private": true,
+  "version": "0.1.0",
+  "scripts": {
+    "build": "hardhat compile",
+    "test": "hardhat test",
+    "node": "hardhat node",
+    "deploy:local": "hardhat run scripts/deploy.ts --network localhost",
+    "deploy:sepolia": "hardhat run scripts/deploy.ts --network sepolia",
+    "export:frontend": "tsx scripts/export-frontend.ts"
+  },
+  "dependencies": {
+    "@openzeppelin/contracts": "^5.4.0"
+  },
+  "devDependencies": {
+    "@nomicfoundation/hardhat-toolbox": "^6.0.0",
+    "@types/node": "^24.0.0",
+    "dotenv": "^16.4.0",
+    "hardhat": "^2.26.0",
+    "tsx": "^4.20.0",
+    "typescript": "^5.9.0"
+  }
+}

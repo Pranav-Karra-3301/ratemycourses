@@ -1,0 +1,19 @@
+{
+  "name": "ratemycourses",
+  "private": true,
+  "version": "0.1.0",
+  "description": "RateMyCourses decentralized course review dApp",
+  "scripts": {
+    "build": "pnpm --filter contracts build && pnpm --filter frontend build",
+    "test": "pnpm --filter contracts test",
+    "lint": "pnpm --filter frontend lint",
+    "dev": "pnpm --filter frontend dev",
+    "contracts:node": "pnpm --filter contracts node",
+    "contracts:deploy": "pnpm --filter contracts deploy:local",
+    "contracts:export": "pnpm --filter contracts export:frontend"
+  },
+  "packageManager": "pnpm@10.27.0",
+  "engines": {
+    "node": ">=22"
+  }
+}
