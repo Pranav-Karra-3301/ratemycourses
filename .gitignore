@@ -10,3 +10,4 @@ typechain-types
 .env.local
 .env.*.local
 frontend/generated/deployments/*.local.json
+.vercel

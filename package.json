@@ -3,6 +3,11 @@
   "private": true,
   "version": "0.1.0",
   "description": "RateMyCourses decentralized course review dApp",
+  "dependencies": {
+    "next": "^16.0.0",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0"
+  },
   "scripts": {
     "build": "pnpm --filter contracts build && pnpm --filter frontend build",
     "test": "pnpm --filter contracts test",
