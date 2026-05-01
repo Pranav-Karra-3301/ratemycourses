@@ -2,19 +2,18 @@
 
 import { FormEvent, useState } from "react";
 import { Send } from "lucide-react";
-import { courses } from "@/lib/courses";
 import type { ReviewDraft } from "@/lib/types";
 import { useReviewActions } from "@/hooks/useReviewActions";
 import { contractsConfigured } from "@/lib/contracts";
 import { useAccount } from "wagmi";
 
 const initialDraft: ReviewDraft = {
-  courseId: courses[0].id,
-  semester: "Fall 2026",
-  professor: courses[0].professor,
+  courseId: "",
+  semester: "",
+  professor: "",
   overallRating: 5,
   difficultyRating: 3,
-  workloadHours: 6,
+  workloadHours: 0,
   title: "",
   body: "",
   tips: ""
@@ -34,7 +33,7 @@ export function ReviewForm() {
     event.preventDefault();
     setStatus("");
     try {
-      await submitReview(draft);
+      await submitReview(normalizedDraft);
       setStatus("Transaction submitted. Your review is being written on-chain.");
       setDraft(initialDraft);
     } catch (submitError) {
@@ -43,37 +42,35 @@ export function ReviewForm() {
   }
 
   const disabled = !isConnected || !contractsConfigured || isPending;
+  const normalizedDraft = {
+    ...draft,
+    courseId: draft.courseId.trim().toUpperCase(),
+    semester: draft.semester.trim() || "Unspecified",
+    professor: draft.professor.trim() || "Not listed",
+    title: draft.title.trim() || `Review for ${draft.courseId.trim().toUpperCase()}`,
+    tips: draft.tips.trim() || "No extra advice provided."
+  };
 
   return (
     <form onSubmit={onSubmit} className="space-y-5 border border-line bg-panel p-5">
       <div className="grid gap-4 md:grid-cols-2">
         <label className="space-y-2">
-          <span className="font-mono text-xs uppercase text-muted">Course</span>
-          <select
+          <span className="font-mono text-xs uppercase text-muted">Course code</span>
+          <input
             value={draft.courseId}
-            onChange={(event) => {
-              const course = courses.find((item) => item.id === event.target.value);
-              update("courseId", event.target.value);
-              if (course) {
-                update("professor", course.professor);
-              }
-            }}
+            onChange={(event) => update("courseId", event.target.value)}
+            placeholder="CMPSC-473, MATH-230, ENGL-202C"
             className="w-full border border-line bg-ink px-3 py-3 text-sm text-paper"
-          >
-            {courses.map((course) => (
-              <option key={course.id} value={course.id}>
-                {course.code} - {course.title}
-              </option>
-            ))}
-          </select>
+            required
+          />
         </label>
         <label className="space-y-2">
           <span className="font-mono text-xs uppercase text-muted">Professor</span>
           <input
             value={draft.professor}
             onChange={(event) => update("professor", event.target.value)}
+            placeholder="Optional"
             className="w-full border border-line bg-ink px-3 py-3 text-sm text-paper"
-            required
           />
         </label>
       </div>
@@ -83,8 +80,8 @@ export function ReviewForm() {
           <input
             value={draft.semester}
             onChange={(event) => update("semester", event.target.value)}
+            placeholder="Optional"
             className="w-full border border-line bg-ink px-3 py-3 text-sm text-paper"
-            required
           />
         </label>
         <NumberField label="Overall" value={draft.overallRating} min={1} max={5} onChange={(value) => update("overallRating", value)} />
@@ -108,8 +105,8 @@ export function ReviewForm() {
         <input
           value={draft.title}
           onChange={(event) => update("title", event.target.value)}
+          placeholder="Optional"
           className="w-full border border-line bg-ink px-3 py-3 text-sm text-paper"
-          required
         />
       </label>
       <label className="block space-y-2">
@@ -126,8 +123,8 @@ export function ReviewForm() {
         <textarea
           value={draft.tips}
           onChange={(event) => update("tips", event.target.value)}
+          placeholder="Optional"
           className="min-h-24 w-full border border-line bg-ink px-3 py-3 text-sm leading-6 text-paper"
-          required
         />
       </label>
       <div className="flex flex-wrap items-center gap-3">
