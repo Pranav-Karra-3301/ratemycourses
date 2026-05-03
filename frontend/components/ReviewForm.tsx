@@ -6,6 +6,7 @@ import type { ReviewDraft } from "@/lib/types";
 import { useReviewActions } from "@/hooks/useReviewActions";
 import { contractsConfigured } from "@/lib/contracts";
 import { useAccount } from "wagmi";
+import { normalizeCourseCode } from "@/lib/courseCodes";
 
 const initialDraft: ReviewDraft = {
   courseId: "",
@@ -42,12 +43,13 @@ export function ReviewForm() {
   }
 
   const disabled = !isConnected || !contractsConfigured || isPending;
+  const courseCode = normalizeCourseCode(draft.courseId);
   const normalizedDraft = {
     ...draft,
-    courseId: draft.courseId.trim().toUpperCase(),
+    courseId: courseCode?.id ?? draft.courseId.trim().toUpperCase(),
     semester: draft.semester.trim() || "Unspecified",
     professor: draft.professor.trim() || "Not listed",
-    title: draft.title.trim() || `Review for ${draft.courseId.trim().toUpperCase()}`,
+    title: draft.title.trim() || `Review for ${courseCode?.code ?? draft.courseId.trim().toUpperCase()}`,
     tips: draft.tips.trim() || "No extra advice provided."
   };
 

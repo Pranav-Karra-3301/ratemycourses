@@ -1,23 +1,28 @@
 "use client";
 
-// Browse page lets users filter the seeded course directory by query and department.
+// Browse page lets users filter seeded courses plus course IDs discovered from on-chain reviews.
 import { useMemo, useState } from "react";
 import { CourseCard } from "@/components/CourseCard";
-import { courses } from "@/lib/courses";
+import { buildCourseDirectory } from "@/lib/courses";
+import { useAllReviews } from "@/hooks/useAllReviews";
 
 export default function BrowsePage() {
   const [query, setQuery] = useState("");
   const [department, setDepartment] = useState("All");
-  const departments = ["All", ...Array.from(new Set(courses.map((course) => course.department)))];
+  const liveReviews = useAllReviews();
+  const courseDirectory = useMemo(() => buildCourseDirectory(liveReviews), [liveReviews]);
+  const departments = ["All", ...Array.from(new Set(courseDirectory.map((course) => course.department)))];
 
   const filteredCourses = useMemo(() => {
     const normalized = query.toLowerCase();
-    return courses.filter((course) => {
-      const matchesQuery = `${course.code} ${course.title} ${course.professor}`.toLowerCase().includes(normalized);
+    return courseDirectory.filter((course) => {
+      const matchesQuery = `${course.code} ${course.title} ${course.professor} ${course.department} ${course.tags.join(" ")}`
+        .toLowerCase()
+        .includes(normalized);
       const matchesDepartment = department === "All" || course.department === department;
       return matchesQuery && matchesDepartment;
     });
-  }, [department, query]);
+  }, [courseDirectory, department, query]);
 
   return (
     <div className="space-y-8">

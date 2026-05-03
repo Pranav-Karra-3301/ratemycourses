@@ -5,13 +5,25 @@ import Link from "next/link";
 import { useParams } from "next/navigation";
 import { ReviewCard } from "@/components/ReviewCard";
 import { StatPill } from "@/components/StatPill";
-import { getCourse } from "@/lib/courses";
+import { buildCourseDirectory, getCourse, reviewsForCourse } from "@/lib/courses";
 import { useCourseReviews } from "@/hooks/useCourseReviews";
+import { useAllReviews } from "@/hooks/useAllReviews";
+import { normalizeCourseId } from "@/lib/courseCodes";
+import { useMemo } from "react";
 
 export default function CourseDetailPage() {
   const params = useParams<{ courseId: string }>();
-  const course = getCourse(params.courseId);
-  const reviews = useCourseReviews(params.courseId);
+  const courseId = normalizeCourseId(params.courseId);
+  const seededCourse = getCourse(courseId);
+  const exactCourseReviews = useCourseReviews(courseId);
+  const liveReviews = useAllReviews();
+  const liveCourseReviews = useMemo(() => reviewsForCourse(liveReviews, courseId), [courseId, liveReviews]);
+  const discoveredCourse = useMemo(
+    () => buildCourseDirectory(liveCourseReviews).find((course) => course.id === courseId),
+    [courseId, liveCourseReviews]
+  );
+  const course = seededCourse ?? discoveredCourse;
+  const reviews = liveCourseReviews.length > 0 ? [...liveCourseReviews].sort((a, b) => b.score - a.score) : exactCourseReviews;
 
   if (!course) {
     return (

@@ -5,6 +5,7 @@ import { reviewRegistryAbi, votingContractAbi } from "@/lib/abi";
 import { contractAddresses } from "@/lib/contracts";
 import type { ReviewDraft } from "@/lib/types";
 import { uploadReviewContent } from "@/lib/ipfs";
+import { normalizeCourseCode } from "@/lib/courseCodes";
 
 export function useReviewActions() {
   const { writeContractAsync, isPending, error, data } = useWriteContract();
@@ -12,6 +13,11 @@ export function useReviewActions() {
   async function submitReview(draft: ReviewDraft) {
     if (!contractAddresses.reviewRegistry) {
       throw new Error("ReviewRegistry address is not configured.");
+    }
+
+    const courseCode = normalizeCourseCode(draft.courseId);
+    if (!courseCode) {
+      throw new Error("Use a course code like STAT 200 or MATH 230.");
     }
 
     const contentHash = await uploadReviewContent({
@@ -25,7 +31,7 @@ export function useReviewActions() {
       abi: reviewRegistryAbi,
       functionName: "submitReview",
       args: [
-        draft.courseId,
+        courseCode.id,
         draft.semester,
         draft.professor,
         draft.overallRating,

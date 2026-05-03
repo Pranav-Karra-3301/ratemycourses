@@ -2,13 +2,11 @@
 
 import { useMemo } from "react";
 import { useReadContract, useReadContracts } from "wagmi";
+import type { Address } from "viem";
 import { reviewRegistryAbi, votingContractAbi } from "@/lib/abi";
 import { contractAddresses, contractsConfigured } from "@/lib/contracts";
-import { sampleReviews } from "@/lib/courses";
-import { normalizeCourseId } from "@/lib/courseCodes";
 import { resolveReviewContent } from "@/lib/ipfs";
 import type { ReviewSummary } from "@/lib/types";
-import type { Address } from "viem";
 
 type ContractReview = {
   id: bigint;
@@ -30,41 +28,41 @@ type ContractVoteTotals = {
   score: bigint;
 };
 
-export function useCourseReviews(courseId?: string) {
-  const normalizedCourseId = useMemo(() => (courseId ? normalizeCourseId(courseId) : undefined), [courseId]);
-
-  const { data: reviewIds } = useReadContract({
+export function useAllReviews() {
+  const { data: reviewCount } = useReadContract({
     address: contractAddresses.reviewRegistry,
     abi: reviewRegistryAbi,
-    functionName: "getCourseReviewIds",
-    args: normalizedCourseId ? [normalizedCourseId] : undefined,
+    functionName: "reviewCount",
     query: {
-      enabled: Boolean(normalizedCourseId && contractsConfigured)
+      enabled: contractsConfigured
     }
   });
 
-  const ids = useMemo(() => [...(reviewIds ?? [])], [reviewIds]);
+  const reviewIds = useMemo(() => {
+    const count = Number(reviewCount ?? 0n);
+    return Array.from({ length: count }, (_, index) => BigInt(index + 1));
+  }, [reviewCount]);
 
   const reviewCalls = useMemo(
     () =>
-      ids.map((id) => ({
+      reviewIds.map((id) => ({
         address: contractAddresses.reviewRegistry,
         abi: reviewRegistryAbi,
         functionName: "getReview",
         args: [id]
       })),
-    [ids]
+    [reviewIds]
   );
 
   const voteCalls = useMemo(
     () =>
-      ids.map((id) => ({
+      reviewIds.map((id) => ({
         address: contractAddresses.votingContract,
         abi: votingContractAbi,
         functionName: "getVoteTotals",
         args: [id]
       })),
-    [ids]
+    [reviewIds]
   );
 
   const { data: reviewResults } = useReadContracts({
@@ -82,7 +80,7 @@ export function useCourseReviews(courseId?: string) {
   });
 
   return useMemo<ReviewSummary[]>(() => {
-    const liveReviews: ReviewSummary[] = [];
+    const reviews: ReviewSummary[] = [];
 
     reviewResults?.forEach((item, index) => {
       if (item.status !== "success") {
@@ -102,7 +100,7 @@ export function useCourseReviews(courseId?: string) {
               score: 0n
             };
 
-      liveReviews.push({
+      reviews.push({
         id: review.id,
         author: review.author,
         courseId: review.courseId,
@@ -123,13 +121,6 @@ export function useCourseReviews(courseId?: string) {
       });
     });
 
-    const reviews =
-      liveReviews.length > 0
-        ? liveReviews
-        : normalizedCourseId
-          ? sampleReviews.filter((review) => normalizeCourseId(review.courseId) === normalizedCourseId)
-          : sampleReviews;
-
-    return [...reviews].sort((a, b) => b.score - a.score);
-  }, [normalizedCourseId, reviewResults, voteResults]);
+    return reviews.sort((a, b) => b.createdAt - a.createdAt);
+  }, [reviewResults, voteResults]);
 }

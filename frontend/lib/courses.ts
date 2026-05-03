@@ -1,4 +1,5 @@
 import type { Course, ReviewSummary } from "@/lib/types";
+import { formatCourseCode, normalizeCourseCode, normalizeCourseId } from "@/lib/courseCodes";
 
 export const courses: Course[] = [
   {
@@ -112,5 +113,64 @@ export const sampleReviews: ReviewSummary[] = [
 ];
 
 export function getCourse(courseId: string) {
-  return courses.find((course) => course.id === courseId);
+  const normalizedId = normalizeCourseId(courseId);
+  return courses.find((course) => course.id === normalizedId);
+}
+
+export function buildCourseDirectory(reviews: ReviewSummary[] = []) {
+  const byId = new Map<string, Course>(courses.map((course) => [course.id, course]));
+  const groupedReviews = new Map<string, ReviewSummary[]>();
+
+  reviews.forEach((review) => {
+    const courseId = normalizeCourseId(review.courseId);
+    groupedReviews.set(courseId, [...(groupedReviews.get(courseId) ?? []), review]);
+  });
+
+  groupedReviews.forEach((courseReviews, courseId) => {
+    const seededCourse = byId.get(courseId);
+    const reviewCount = courseReviews.length;
+    const averageRating = average(courseReviews.map((review) => review.overallRating));
+    const difficulty = average(courseReviews.map((review) => review.difficultyRating));
+    const latestReview = [...courseReviews].sort((a, b) => b.createdAt - a.createdAt)[0];
+    const normalized = normalizeCourseCode(courseId);
+
+    byId.set(courseId, {
+      id: courseId,
+      code: seededCourse?.code ?? normalized?.code ?? formatCourseCode(courseId),
+      title: seededCourse?.title ?? "Student-added course",
+      department: seededCourse?.department ?? normalized?.department ?? "Custom",
+      professor: professorFromReview(latestReview) ?? seededCourse?.professor ?? "Not listed",
+      credits: seededCourse?.credits ?? 0,
+      averageRating,
+      difficulty,
+      reviewCount,
+      tags: seededCourse?.tags ?? ["on-chain", "student-added"]
+    });
+  });
+
+  return [...byId.values()].sort((a, b) => {
+    if (b.reviewCount !== a.reviewCount) {
+      return b.reviewCount - a.reviewCount;
+    }
+    return a.code.localeCompare(b.code);
+  });
+}
+
+export function reviewsForCourse(reviews: ReviewSummary[], courseId: string) {
+  const normalizedId = normalizeCourseId(courseId);
+  return reviews.filter((review) => normalizeCourseId(review.courseId) === normalizedId);
+}
+
+function average(values: number[]) {
+  if (values.length === 0) {
+    return 0;
+  }
+  return values.reduce((sum, value) => sum + value, 0) / values.length;
+}
+
+function professorFromReview(review?: ReviewSummary) {
+  if (!review || review.professor === "Not listed") {
+    return undefined;
+  }
+  return review.professor;
 }
