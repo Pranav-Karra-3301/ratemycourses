@@ -4,6 +4,8 @@ CMPSC 263 Class Spring 26 project.
 
 RateMyCourses is a decentralized course review dApp. Students connect a wallet, publish anonymous course reviews, and vote or flag reviews through smart contracts.
 
+**Live demo:** [ratemycourses.vercel.app](https://ratemycourses.vercel.app) (public deployment runs in read-only demo mode unless Sepolia contract addresses are configured).
+
 ## Structure
 
 - `frontend/` - Next.js App Router dApp with wagmi and viem.
@@ -61,3 +63,7 @@ pnpm test
 pnpm lint
 pnpm build
 ```
+
+---
+
+Built by [Pranav Karra](https://pranavkarra.me) for CMPSC 263.

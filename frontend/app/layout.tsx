@@ -4,8 +4,31 @@ import { AppProviders } from "@/components/AppProviders";
 import { Header } from "@/components/Header";
 
 export const metadata: Metadata = {
+  metadataBase: new URL("https://ratemycourses.vercel.app"),
   title: "RateMyCourses",
-  description: "Anonymous decentralized course reviews"
+  description:
+    "A decentralized course review dApp. Connect a wallet, publish anonymous course reviews, and vote or flag reviews through Ethereum smart contracts.",
+  keywords: [
+    "course reviews",
+    "dApp",
+    "web3",
+    "Ethereum",
+    "smart contracts",
+    "anonymous reviews"
+  ],
+  openGraph: {
+    title: "RateMyCourses",
+    description:
+      "Publish and vote on anonymous course reviews on-chain. A decentralized course review dApp.",
+    type: "website",
+    url: "https://ratemycourses.vercel.app"
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "RateMyCourses",
+    description:
+      "Publish and vote on anonymous course reviews on-chain. A decentralized course review dApp."
+  }
 };
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
