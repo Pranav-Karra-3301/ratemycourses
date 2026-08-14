@@ -11,3 +11,4 @@ typechain-types
 .env.*.local
 frontend/generated/deployments/*.local.json
 .vercel
+.DS_Store
